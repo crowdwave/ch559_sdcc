@@ -84,7 +84,7 @@ A simple LED-blink program that verifies the generated header actually works whe
 Anyone can now:
 
 ```bash
-python3 convert_ch559_keil_to_sdcc.py
+python3 convert.py
 sdcc -mmcs51 main.c
 ```
 
@@ -114,7 +114,7 @@ Just a clean, reproducible transformation.
 
 ## 🚀 Quick Start
 
-1. Place `CH559.H` (from WCH) in the same directory as `convert_ch559_keil_to_sdcc.py`.
+1. Place `CH559.H` (from WCH) in the same directory as `convert.py`.
 
 2. Run the converter:
 
@@ -171,7 +171,94 @@ If you're using SDCC and you need CH559 register definitions, this repository gi
 
 ---
 
-## Build setup
+## 🔧 Flashing your CH559
+
+### Using chflasher.py
+
+Once you have a compiled binary (`.bin` file), you can flash it directly to your CH559 via USB using **chflasher.py** — an open-source Python flashing tool created by [Aaron Christophel (ATCnetz.de)](https://github.com/atc1441/chflasher).
+
+**What it does:**
+- Detects your CH559 device over USB
+- Erases the existing firmware
+- Writes your new binary to flash
+- Verifies the write was successful
+- Supports CH551, CH552, CH554, CH558, and CH559
+
+**How to use it:**
+
+```bash
+python3 chflasher.py main.bin
+```
+
+The device will enter bootloader mode automatically (via USB reset). Place your CH559 in bootloader mode and the flashing will begin.
+
+**Setup (one-time):**
+
+Install pyusb:
+
+```bash
+pip install pyusb
+```
+
+On Linux, you may need to configure udev rules for USB access (the script will guide you if needed).
+
+On Windows, you may need [Zadig](https://zadig.akeo.ie/) to install the correct libusb driver.
+
+---
+
+## 🏗️ Build and Flash Automation
+
+### Optional: build_and_flash.sh
+
+If you want a single command to build and flash, we provide an optional bash script that:
+
+- Checks for required tools (SDCC, Python 3)
+- Runs the converter
+- Compiles your code with SDCC
+- Converts the output to binary format
+- Flashes the result to your CH559
+
+**Usage:**
+
+```bash
+./build_and_flash.sh all      # setup + clean + build + flash
+./build_and_flash.sh setup    # install dependencies
+./build_and_flash.sh build    # compile only
+./build_and_flash.sh flash    # flash only
+./build_and_flash.sh clean    # clean build artifacts
+```
+
+This script expects a project structure like:
+
+```
+project/
+├── src/
+│   ├── main.c
+│   ├── DEBUG.C
+│   └── CH559.H
+├── chflasher.py (auto-downloaded if missing)
+├── convert_ch559_keil_to_sdcc.py
+└── build_and_flash.sh
+```
+
+---
+
+## 🛠️ Hardware Setup
+
+### Recommended: ElectroDragon CH559 Dev Board
+
+For beginners, we recommend the **[ElectroDragon CH559 Development Board](https://www.electrodragon.com/product/ch559-usb-mcu-board/)**, which includes:
+
+- CH559 microcontroller pre-populated
+- USB Type-B connector for flashing and power
+- Built-in LEDs and buttons for testing
+- Ready to program
+
+This board is perfect for prototyping and has good community support.
+
+---
+
+## 📦 Manual Build Setup
 
 ### Direct command-line compile
 
@@ -226,6 +313,14 @@ will compile and generate `main.hex` ready for flashing.
 
 - **convert_ch559_keil_to_sdcc.py** — The converter script (with detailed inline documentation)
 - **main.c** — Minimal test program demonstrating SFR and sbit usage
+- **build_and_flash.sh** — Optional automation script for compile and flash
+- **chflasher.py** — USB flasher tool (auto-downloaded if missing)
 - **README.md** — This file
+
+---
+
+## 🙏 Attribution
+
+**chflasher.py** is maintained by [Aaron Christophel (ATCnetz.de)](https://github.com/atc1441/chflasher) and is used under the terms of its open-source license. This tool is essential for flashing CH55x series microcontrollers over USB and is credited in all documentation and usage.
 
 ---
